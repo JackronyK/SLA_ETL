@@ -1,0 +1,27 @@
+No.,SLA Service,Link Description,Link ID,Capacity (Mbps),MRC,QRC,Last Mile,SLA Date,Status,SLM Comments
+1,KRA KIXP,KRA - TIMES TOWERS TO KRA - KIXP (EADC),1750,90,270000.0,810000.0,Fibre,2020-10-01,Active,"16/04/2022: Upgraded 90 Mbps @ KES 649,050  -> 150 Mbps @ KES 810,000 ex vat"
+2,KRA Customs Hse - Times Tower,KRA CUSTOMS HSE TO KRA TIMES TOWER,5277,75,179718.0,539154.0,Fibre,2020-10-01,Active,Not in Invoice/Renamed/Relocated
+3,KRA AIRPORT CONTAINER DEPOT TO CUSTOMS HSE MSA,KRA AIRPORT CONTAINER DEPOT TO CUSTOMS HSE MSA,5611,8,20642.5,61927.5,Fibre,2020-10-01,Active,Okay. No change
+4,KRA Wilson Airport,KRA Wilson Airport Customs to Times Towers - Vlan 2064,20103,9,22950.0,68850.0,Fibre,2020-10-01,Active,Okay. No change
+5,KRA Egerton University Njoro,KRA TIMES TOWERS NBO TO EGERTON UNIVERSITY NJORO[RT#44277],20954,20,50000.0,150000.0,Fibre,2020-10-01,Active,Okay. No change
+6,KRA Sameer Park,SAMEER BUSINESS PARK TO TIMES KRA TOWERS [RT#44616],21195,80,144000.0,432000.0,Fibre,2020-10-01,Active,"16/04/2022: Upgraded 16 Mbps @ KES 119,850 -> 80 Mbps @ KES 432,000 ex vat"
+7,KRA -ICD Naivasha SGR,LTK TO KRA ISIOLO  (RT#45506) or KRA ICD Naivasha SGR,22727,13,32176.0,96528.0,P2P,2020-10-01,Active,Not in Invoice/Renamed/Relocated
+8,KRA City Hall,LTK TO KRA MURANGA (RT#45517) or City Hall,22728,15,38000.0,114000.0,Fibre,2020-10-01,Inactive,21/07/2023: Decommissioned and migrated to KRA Sameer Park MRI (C-00159-0087). Should not be invoiced.
+9,KRA Kajiado,LTK TO KRA KAJIADO (RT#45507),22729,10,19000.0,57000.0,Fibre,2020-10-01,Active,Not in Invoice/Renamed/Relocated 
+10,KRA Narok,LTK TO KRA NAROK (RT#45505),22730,10,19000.0,57000.0,P2P,2020-10-01,Inactive,24/04/2021: Decommissioned and migrated to JKIA Exports (SVC-000354038). Should not be invoiced.
+11,KRA Nairobi PPO,LTK TO KRA NAIROBI PPO (RT#45516),22736,4,9500.0,28500.0,Fibre,2020-10-01,Active,24/04/2021: link relocated to swiss port JKIA
+12,KRA JKIA Terminal 2,KRA JKIA TERMINAL 2 TO KRA HQ (#47507),23945,8,20000.0,60000.0,Fibre,2020-10-01,Active,Okay. No change
+13,KRA Kisumu Pier,KRA KISUMU PIER TO KRA HQ (#48884),24174,8,19000.0,57000.0,P2P,2020-10-01,Active,Okay. No change
+14,KRA Kitale,KRA HQ TO KRA KITALE (#45509),25102,30,54000.0,162000.0,P2P,2020-10-01,Active,"16/04/2022: Upgraded 8 Mbps @ KES 57,000 -> 30 Mbps @ KES 162,000 ex vat"
+15,KRA Lamu Airport,KRA HQ TO KRA LAMU AIRPORT(#45510),25103,4,9500.0,28500.0,Fibre,2020-10-01,Active,Not in Invoice/Renamed/Relocated
+16,KRA Kisumu Post Parcels (PPO),KRA HQ TO KRA KISUMU POST PARCELS(#45508),25104,4,9500.0,28500.0,P2P,2020-10-01,Active,Not in Invoice/Renamed/Relocated
+17,KRA Kisumu Lake Basin Mall,KRA HQ TO KRA KISUMU PIPELINE(#45513)  Or Kisumu Lake Basin Mall,25105,8,19000.0,57000.0,Fibre,2020-10-01,Active,Not in Invoice/Renamed/Relocated
+18,KRA Kisumu Airport,KRA HQ TO KRA KISUMU AIRPORT(#45511),25106,8,19000.0,57000.0,Fibre,2020-10-01,Active,Okay. No change
+19,KRA Maralal,KRA MARALAL TO KRA HQ (INS-56),26045,15,32176.0,96528.0,Fibre,2020-10-01,Active,Not in Invoice/Renamed/Relocated
+20,KRA MIA Mombasa Baggage Hall,KRA MBITA TO KRA HQ - 1(THOUGH TKL KENYA) (INS-57),26046,6,16088.0,48264.0,Fibre,2020-10-01,Active,08/06/2020: Invoices need to be updated to refer to 'Baggage Hall' and not 'KRA Mbita'
+21,KRA Lodwar,KRA LODWAR TO KRA HQ  (THROUGH TELKOM KENYA)(INS-60),26047,15,32176.0,96528.0,Fibre,2020-10-01,Inactive,24/04/2021: Decommissioned and link relocated to JKIA Siginon (Code SVC-000354016). Should not be invoiced.
+22,CBC Upper Hill,CBC Upper Hill,SVC-000001477,30,66700.0,200100.0,Internet,2020-10-01,Active,"Upgraded to 300 MBPS @ KES 1,080,000 EX VAT, but no approval available"
+23,WAN Backhaul,WAN Backhaul,SVC-000001475,150,270000.0,810000.0,Fibre,2020-10-01,Active,"16/04/2022: Upgraded 40 Mbps @ KES 348,000  -> 150 Mbps @ KES 810,000 ex vat"
+24,KRA Sameer Park MRI,EPL Connection charge 80MBPS->SAMEER BUSINESS PARK,C-00159-0087,80,120000.0,360000.0,Fibre,,Active,"21/07/2023: Migrated from City Hall (22728) and upgraded to 80 Mbps @ KES 360,000 ex vat"
+25,JKIA Signon,,SVC-000354016,15,32176.0,96528.0,Fibre,,Active,24/04/2021: Migrated from KRA Lodwar (26047)
+26,JKIA Exports,,SVC-000354038,10,19000.95,57002.85,P2P,,Active,24/04/2021: Migrated from KRA Narok (22730)
