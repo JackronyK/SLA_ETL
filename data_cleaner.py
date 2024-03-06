@@ -61,15 +61,20 @@ class DataCleaner:
 
     def clean_invoice_data(self):
         self.col_renaming()
-        # Convert 'Invoice Date' to datetime
-        if 'Invoice_Date' in self.df.columns:
-            self.df['Invoice_Date'] = pd.to_datetime(self.df['Invoice_Date'])
 
         # Adjust 'Link ID' based on its current type
-        if 'Link ID' in self.df.columns:
+        if 'Link_ID' in self.df.columns:
             if self.df['Link_ID'].dtype == 'float':
                 self.df['Link_ID'] = self.df['Link_ID'].astype('int').astype('str')
             elif self.df['Link_ID'].dtype == 'int':
                 self.df['Link_ID'] = self.df['Link_ID'].astype('str')
             # If 'Link ID' is already object, no conversion is needed
-        return self.df
+            # Convert 'Invoice Date' to datetime
+        if 'Invoice_Date' in self.df.columns:
+            self.df['Invoice_Date'] = pd.to_datetime(self.df['Invoice_Date'])
+
+        
+    def invoice_df(self):
+        self.clean_invoice_data()
+        df = self.df
+        return df
