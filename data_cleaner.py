@@ -150,7 +150,7 @@ class SLACleaner:
             'Last Mile': 'Last_Mile',
             'QRC': 'QRC_Incl',
             self.site_desc_picker(): 'Location',
-            self.capacity_picker(): 'Capacity',
+            self.capacity_picker(): 'Capacity(Mbps)',
             self.MRC_picker(): 'MRC_Excl',
             self.comments_picker(): 'SLM_Comments'
         }
