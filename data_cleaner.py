@@ -146,7 +146,9 @@ class SLACleaner:
                 np.multiply((self.df[self.MRC_picker()] * (1+self.excise_duty)) * (1+self.VAT),3),
                 np.where(
                     self.df['Last Mile'].str.lower() == 'mpls', # Multiprotocol label Switching (MPLS) which includes only VAT
-                    np.multiply(self.df[self.MRC_picker()] * (1+self.VAT),3)  
+                    np.multiply(self.df[self.MRC_picker()] * (1+self.VAT),3),
+                    self.df[self.MRC_picker()]
+
                 )
 
             )
