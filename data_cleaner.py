@@ -141,9 +141,9 @@ class SLACleaner:
         if self.MRC_picker() in self.df.columns:
             self.excise_duty = 0.15
             self.VAT = 0.16
-            if self.df['Last Mile'].lower() == 'internet':
+            if self.df['Last Mile'].str.lower() == 'Internet':
                 self.df['QRC'] = np.multiply((self.df[self.MRC_picker()] * (1+self.excise_duty)) * (1+self.VAT),3)
-            elif self.df['Last Mile'].lower() == 'mpls':
+            elif self.df['Last Mile'].str.lower() == 'MPLS':
                 self.df['QRC'] = np.multiply(self.df[self.MRC_picker()] * (1+self.VAT),3)
 
         # Renaming the Columns
