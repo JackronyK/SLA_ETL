@@ -1,6 +1,12 @@
 import pandas as pd
 import numpy as np
 
+'''
+Cleaner Module. 
+It has 2 class
+1. Invoice Cleaner used to Process the Invoice data frames 
+2. SLA Cleaner used to process the SLA data Frames
+'''
 class InvoiceCleaner:
     def __init__(self, df):
         self.df = df
@@ -132,6 +138,10 @@ class SLACleaner:
         if 'SLA Date' in self.df.columns:
             self.df['SLA Date'] = pd.to_datetime(self.df['SLA Date'])
 
+        # Removing any trailling or leading spcae in Lastmile Col
+        if 'Last Mile' in self.df.columns:
+            self.df['Last Mile'] = self.df['Last Mile'].str.strip()
+
         # Capacity
         if self.capacity_picker() in self.df.columns and self.df[self.capacity_picker()].dtype == 'object':
             self.df[self.capacity_picker()] = self.df[self.capacity_picker()].str.split(' ', expand=True)[0].astype(
@@ -143,13 +153,9 @@ class SLACleaner:
             self.VAT = 0.16
             self.df['QRC'] = np.where(
                 self.df['Last Mile'].str.lower() == 'internet', # Internet taxation which includes both excise and VAT
-                np.multiply((self.df[self.MRC_picker()] * (1+self.excise_duty)) * (1+self.VAT),3),
-                np.where(
-                    self.df['Last Mile'].str.lower() == 'mpls', # Multiprotocol label Switching (MPLS) which includes only VAT
-                    np.multiply(self.df[self.MRC_picker()] * (1+self.VAT),3),
-                    self.df[self.MRC_picker()]
-
-                )
+                ((self.df[self.MRC_picker()] * (1+self.excise_duty)) * (1+self.VAT)*3),                
+                # Multiprotocol label Switching (MPLS) which includes only VAT
+                np.multiply(self.df[self.MRC_picker()] * (1+self.VAT),3)                
 
             )
             '''
@@ -173,4 +179,3 @@ class SLACleaner:
         self.df = self.df.rename(columns=SLA_New_Names)
 
         return self.df
-
