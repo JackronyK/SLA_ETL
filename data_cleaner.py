@@ -141,10 +141,21 @@ class SLACleaner:
         if self.MRC_picker() in self.df.columns:
             self.excise_duty = 0.15
             self.VAT = 0.16
-            if self.df['Last Mile'].str.lower() == 'Internet':
+            self.df['QRC'] = np.where(
+                self.df['Last Mile'].str.lower() == 'internet', # Internet taxation which includes both excise and VAT
+                np.multiply((self.df[self.MRC_picker()] * (1+self.excise_duty)) * (1+self.VAT),3),
+                np.where(
+                    self.df['Last Mile'].str.lower() == 'mpls', # Multiprotocol label Switching (MPLS) which includes only VAT
+                    np.multiply(self.df[self.MRC_picker()] * (1+self.VAT),3)  
+                )
+
+            )
+            '''
+            if self.df['Last Mile'].lower() == 'Internet':
                 self.df['QRC'] = np.multiply((self.df[self.MRC_picker()] * (1+self.excise_duty)) * (1+self.VAT),3)
-            elif self.df['Last Mile'].str.lower() == 'MPLS':
+            elif self.df['Last Mile'].str.lower() == 'mpls':
                 self.df['QRC'] = np.multiply(self.df[self.MRC_picker()] * (1+self.VAT),3)
+            '''
 
         # Renaming the Columns
         SLA_New_Names = {
@@ -160,3 +171,4 @@ class SLACleaner:
         self.df = self.df.rename(columns=SLA_New_Names)
 
         return self.df
+
