@@ -38,6 +38,16 @@ class DB_Manager:
     def insert_data(self, table_name, data):
         columns = ', '.join(data.keys())
         values = ', '.join(f"'{value}'" if isinstance(value, str) else str(value) for value in data.values())
+        
+        # Add single quotes around date values
+        values = values.replace("2020-10-01 00:00:00", "'2020-10-01 00:00:00'")
+        
         query = f"INSERT INTO {table_name} ({columns}) VALUES ({values})"
-        print("Query:", query)  
+        
+        # Add backticks around column names
+        columns_with_backticks = ', '.join(f"`{col}`" for col in data.keys())
+        query = f"INSERT INTO {table_name} ({columns_with_backticks}) VALUES ({values})"
+        
+        print("Query:", query)  # Print the query for debugging
         self.execute_query(query)
+

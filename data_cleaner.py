@@ -201,7 +201,7 @@ class SLACleaner:
             'Last Mile': 'Last_Mile',
             'QRC': 'QRC_Incl',
             self.site_desc_picker(): 'Location',
-            self.capacity_picker(): 'Capacity(Mbps)',
+            self.capacity_picker(): 'Capacity_in_Mbps',
             self.MRC_picker(): 'MRC_Excl',
             self.comments_picker(): 'SLM_Comments'
         }
@@ -217,7 +217,7 @@ class SLACleaner:
                 duplicates_df = self.df[self.df['Link_ID'] == id]
 
                 #Finding Index of row with theh highest capacity..We want to maintain the upgraded Link
-                max_cap_index = duplicates_df['Capacity(Mbps)'].idxmax()
+                max_cap_index = duplicates_df['Capacity_in_Mbps'].idxmax()
 
                 #Droppping all otherduplicates exce[t the one with upgraded capacity
                 self.df = self.df.drop(duplicates_df.index.difference([max_cap_index]))  

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS SLA_Combined_df (
   `Link_ID` VARCHAR(255) NOT NULL,
   `SLA_Date` DATE,
   `Last_Mile` VARCHAR(255),
-  `Capacity_Mbps` INT,
+  `Capacity_in_Mbps` INT,
   `Location` VARCHAR(255),
   `MRC_Excl` DECIMAL(10,2),
   `SLM_Comments` TEXT,
