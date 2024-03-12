@@ -8,30 +8,31 @@ USE KRA_SLA_ETL_Project;
 SELECT 'Using database: KRA_SLA_ETL_Project' AS Message;
 
 -- Creating the schemas
+
 -- SLA Combined Table
-drop table  if exists SLA_Combined_df;
-create table if not exists SLA_Combined_df(
-Link_ID varchar(20) not null primary key,
-SLA_Date datetime,
-Last_Mile varchar(20),
-`Capacity(Mbps)` Int,
-Location varchar(100),
-SLA_ID varchar(30),
-Service_Provider varchar(20),
-MRC_Excl float,
-QRC_Incl float,
-SLM_Comments varchar(50)
-);
+CREATE TABLE IF NOT EXISTS SLA_Combined_df (
+  `Link_ID` VARCHAR(255) NOT NULL,
+  `SLA_Date` DATE,
+  `Last_Mile` VARCHAR(255),
+  `Capacity_Mbps` INT,
+  `Location` VARCHAR(255),
+  `MRC_Excl` DECIMAL(10,2),
+  `SLM_Comments` TEXT,
+  `QRC_Incl` DECIMAL(10,2),
+  `SLA_ID` VARCHAR(255),
+  `Service_Provider` VARCHAR(255),
+  PRIMARY KEY (`Link_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Invoice Combined DF
-drop table  if exists Invoice_Combined_df;
-create table if not exists Invoice_Combined_df(
-Link_ID varchar(20) not null primary key,
-Invoice_Date datetime,
-Invoice_Reference varchar(20),
-Invoice_Perid varchar(30),
-Invoice_Description varchar(30),
-Service_Provider varchar(20),
-Total_QRC float
-);
-
+CREATE TABLE IF NOT EXISTS Invoice_Combined_df (
+  `Invoice_Date` DATE,
+  `Link_ID` VARCHAR(255) NOT NULL,
+  `Invoice_Period` VARCHAR(255),
+  `Invoice_Description` TEXT,
+  `Invoice_Reference` VARCHAR(255),
+  `Total_QRC` DECIMAL(10,2),
+  `Invoice_Data` TEXT,
+  `Service_Provider` VARCHAR(255),
+  PRIMARY KEY (`Link_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
