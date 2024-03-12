@@ -39,7 +39,7 @@ class InvoiceCleaner:
     
 
 
-    def clean_data(self):
+    def transform_data(self):
         self.drop_null_rows()
         self.drop_total_row()
 
@@ -75,24 +75,34 @@ class InvoiceCleaner:
         if 'Invoice_Date' in self.df.columns:
             self.df['Invoice_Data'] = pd.to_datetime(self.df['Invoice_Date'])
 
+
+    def invoice_duplicate_handler(self):
+        self.transform_data()
         #Handling the Duplicates Link_IDs
             
         # Identify duplicate Link_IDs
         duplicate_link_ids = self.df['Link_ID'].value_counts()[lambda x:x >1].index
-        
-        
-        # Iterate over each duplicate Link ID
-        for link_id in duplicate_link_ids:
-            # Filter the dataframe for all occurrences of the current Link ID
-            duplicates = self.df[self.df['Link_ID'] == link_id]
-            
-            # Find the index of the row with the highest Total_QRC
-            max_qrc_index = duplicates['Total_QRC'].idxmax()
-            
-            # Drop all other duplicates except for the one with the highest Total_QRC
-            self.df = self.df.drop(duplicates.index.difference([max_qrc_index]))
 
+        #Checking if there are duplicate Link IDS
+        if len(duplicate_link_ids) > 0:        
+        
+            # Iterate over each duplicate Link ID
+            for link_id in duplicate_link_ids:
+
+             # Filter the dataframe for all occurrences of the current Link ID
+                duplicates = self.df[self.df['Link_ID'] == link_id]
+            
+                # Find the index of the row with the highest Total_QRC
+                max_qrc_index = duplicates['Total_QRC'].idxmax()
+            
+                # Drop all other duplicates except for the one with the highest Total_QRC
+                self.df = self.df.drop(duplicates.index.difference([max_qrc_index]))
         return self.df
+
+    def clean_data(self):
+        self.df = self.invoice_duplicate_handler()
+        return self.df
+
 
 
 class SLACleaner:
@@ -195,21 +205,21 @@ class SLACleaner:
             self.MRC_picker(): 'MRC_Excl',
             self.comments_picker(): 'SLM_Comments'
         }
+        self.df = self.df.rename(columns=SLA_New_Names)
 
         # Duplicate Links_ID Handling 
             #Duplicate Link IDS
-        duplicate_link_ids = self.df['Link_ID'].value_counts()[lambda x:x>1].index
+        if 'Link_ID' in self.df.columns and len(self.df['Link_ID'].unique()) < len(self.df):
+            duplicate_link_ids = self.df['Link_ID'].value_counts()[lambda x:x>1].index
 
-        for id in duplicate_link_ids:
-            #Subsetting the duplicate Data set
-            duplicates_df = self.df[self.df['Link_ID'] == id]
+            for id in duplicate_link_ids:
+                #Subsetting the duplicate Data set
+                duplicates_df = self.df[self.df['Link_ID'] == id]
 
-            #Finding Index of row with theh highest capacity..We want to maintain the upgraded Link
-            max_cap_index = duplicates_df['Capacity(Mbps)'].idxmax()
+                #Finding Index of row with theh highest capacity..We want to maintain the upgraded Link
+                max_cap_index = duplicates_df['Capacity(Mbps)'].idxmax()
 
-            #Droppping all otherduplicates exce[t the one with upgraded capacity
-            self.df = self.df.drop(duplicates_df.index.difference([max_cap_index]))
-            self.df = self.df.rename(columns=SLA_New_Names)
+                #Droppping all otherduplicates exce[t the one with upgraded capacity
+                self.df = self.df.drop(duplicates_df.index.difference([max_cap_index]))  
 
         return self.df
-        
