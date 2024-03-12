@@ -10,13 +10,15 @@ class DB_Manager:
         self.cursor = None
 
     def connect(self):
-        self.connection = pymysql(
-            host = self.host,
-            user = self.user,
-            password = self.password,
-            database = self.database        
-        )
-        self.cursor = self.connection.cursor()
+        try:
+            self.connection = pymysql.connect(host=self.host,
+                                            user=self.user,
+                                            password=self.password,
+                                            database=self.database)
+            self.cursor = self.connection.cursor()
+            print("Connected to database successfully.")
+        except Exception as e:
+            print(f"Error connecting to database: {e}")
     
     def disconnect(self):
         if self.connection:
@@ -37,4 +39,5 @@ class DB_Manager:
         columns = ', '.join(data.keys())
         values = ', '.join(f"'{value}'" if isinstance(value, str) else str(value) for value in data.values())
         query = f"INSERT INTO {table_name} ({columns}) VALUES ({values})"
+        print("Query:", query)  
         self.execute_query(query)
