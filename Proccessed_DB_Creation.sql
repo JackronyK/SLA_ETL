@@ -10,6 +10,8 @@ SELECT 'Using database: KRA_SLA_ETL_Project' AS Message;
 -- Creating the schemas
 
 -- SLA Combined Table
+-- Dropping it if it exists
+DROP TABLE IF EXISTS SLA_Combined_df;
 CREATE TABLE IF NOT EXISTS SLA_Combined_df (
   `Link_ID` VARCHAR(255) NOT NULL,
   `SLA_Date` DATE,
@@ -25,6 +27,8 @@ CREATE TABLE IF NOT EXISTS SLA_Combined_df (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Invoice Combined DF
+-- Dropping it if it exists
+DROP TABLE IF EXISTS Invoice_Combined_df;
 CREATE TABLE IF NOT EXISTS Invoice_Combined_df (
   `Invoice_Date` DATE,
   `Link_ID` VARCHAR(255) NOT NULL,
@@ -32,7 +36,7 @@ CREATE TABLE IF NOT EXISTS Invoice_Combined_df (
   `Invoice_Description` TEXT,
   `Invoice_Reference` VARCHAR(255),
   `Total_QRC` DECIMAL(10,2),
-  `Invoice_Data` TEXT,
+  `Invoice_Date` TEXT,
   `Service_Provider` VARCHAR(255),
   PRIMARY KEY (`Link_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

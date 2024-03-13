@@ -73,7 +73,7 @@ class InvoiceCleaner:
 
         # Convert 'Invoice Date' to datetime
         if 'Invoice_Date' in self.df.columns:
-            self.df['Invoice_Data'] = pd.to_datetime(self.df['Invoice_Date'])
+            self.df['Invoice_Date'] = pd.to_datetime(self.df['Invoice_Date'])
 
 
     def invoice_duplicate_handler(self):
@@ -164,8 +164,10 @@ class SLACleaner:
                 self.df['Link ID'] = self.df['Link ID'].astype('str')
 
         # Convert 'SLA Date' to datetime
+               
         if 'SLA Date' in self.df.columns:
-            self.df['SLA Date'] = pd.to_datetime(self.df['SLA Date'])
+            self.df['SLA Date'] = pd.to_datetime(self.df['SLA Date'])           
+            
 
         # Removing any trailling or leading spcae in Lastmile Col
         if 'Last Mile' in self.df.columns:
@@ -180,13 +182,13 @@ class SLACleaner:
         if self.MRC_picker() in self.df.columns:
             self.excise_duty = 0.15
             self.VAT = 0.16
-            self.df['QRC'] = np.where(
+            self.df['QRC'] = np.round(np.where(
                 self.df['Last Mile'].str.lower() == 'internet', # Internet taxation which includes both excise and VAT
                 ((self.df[self.MRC_picker()] * (1+self.excise_duty)) * (1+self.VAT)*3),                
                 # Multiprotocol label Switching (MPLS) which includes only VAT
-                np.multiply(self.df[self.MRC_picker()] * (1+self.VAT),3)                
+                np.multiply(self.df[self.MRC_picker()] * (1+self.VAT),3)              
 
-            )
+            ), 2)
             '''
             if self.df['Last Mile'].lower() == 'Internet':
                 self.df['QRC'] = np.multiply((self.df[self.MRC_picker()] * (1+self.excise_duty)) * (1+self.VAT),3)

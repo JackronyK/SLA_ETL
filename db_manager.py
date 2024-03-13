@@ -1,4 +1,7 @@
 import pymysql
+import pandas as pd
+import sqlite3
+from sqlalchemy import create_engine,inspect
 
 class DB_Manager:
     def __init__(self, host, user, password, database):
@@ -51,3 +54,41 @@ class DB_Manager:
         print("Query:", query)  # Print the query for debugging
         self.execute_query(query)
 
+
+
+#### Class DataFrameToSQL 
+
+class DataFrameToSQL:
+    def __init__(self, user, password, host, database):
+        '''
+        Initializes the class with a MySQL database connection.
+        :param user: MySQL Username
+        :param password: MySQL Password
+        :param host: MySQL host.
+        :param database: MySQL database name
+        '''
+        self.database = database
+        
+        self.engine = create_engine(
+            f'mysql+pymysql://{user}:{password}@{host}:3306/{database}'
+        )
+
+
+    def save_to_mysql(self, df, table_name,primary_key = 'Link_ID',if_exists='replace'):
+        '''
+        Saves the DataFrame to the specified table in MySQL database.
+        :param df: The DataFrame to Save.
+        :param table_name: The name of the table to save the DataFrame to.
+        :param if_exists: What to do if the table already exists. Options are fail, replace, append. Default is fail.
+        '''
+        try:
+            df.to_sql(table_name, self.engine, if_exists=if_exists, index=False)
+                
+            # Alter table to add primary key constraint
+            with self.engine.connect() as con:
+                con.execute(f'ALTER TABLE {table_name} MODIFY {primary_key} VARCHAR(255) PRIMARY KEY')
+                #con.execute(f'ALTER TABLE {table_name} ADD PRIMARY KEY ({primary_key})') 
+
+            print(f'DataFrame saved to {table_name} table in MySQL database {self.database}.')
+        except Exception as e:
+            print(f'An error occurred while saving DataFrame to MySQL: {e}')
