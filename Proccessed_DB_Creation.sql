@@ -8,13 +8,14 @@ USE KRA_SLA_ETL_Project;
 SELECT 'Using database: KRA_SLA_ETL_Project' AS Message;
 
 -- Creating the schemas
-
+-- now that we will need to create the schemas I will comment out this part
+/*
 -- SLA Combined Table
 -- Dropping it if it exists
 DROP TABLE IF EXISTS SLA_Combined_df;
 CREATE TABLE IF NOT EXISTS SLA_Combined_df (
   `Link_ID` VARCHAR(255) NOT NULL,
-  `SLA_Date` DATE,
+  `SLA_Date` text,
   `Last_Mile` VARCHAR(255),
   `Capacity_in_Mbps` INT,
   `Location` VARCHAR(255),
@@ -30,7 +31,6 @@ CREATE TABLE IF NOT EXISTS SLA_Combined_df (
 -- Dropping it if it exists
 DROP TABLE IF EXISTS Invoice_Combined_df;
 CREATE TABLE IF NOT EXISTS Invoice_Combined_df (
-  `Invoice_Date` DATE,
   `Link_ID` VARCHAR(255) NOT NULL,
   `Invoice_Period` VARCHAR(255),
   `Invoice_Description` TEXT,
@@ -40,3 +40,5 @@ CREATE TABLE IF NOT EXISTS Invoice_Combined_df (
   `Service_Provider` VARCHAR(255),
   PRIMARY KEY (`Link_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+*/
