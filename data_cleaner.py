@@ -184,6 +184,8 @@ class SLACleaner:
                 self.df['Link ID'] = self.df['Link ID'].astype('int').astype('str')
             elif self.df['Link ID'].dtype == 'int':
                 self.df['Link ID'] = self.df['Link ID'].astype('str')
+            else:
+                self.df['Link ID'] = self.df['Link ID'].astype('str')
 
         # Convert 'SLA Date' to datetime
                
@@ -231,23 +233,22 @@ class SLACleaner:
         }
         self.df = self.df.rename(columns=SLA_New_Names)
 
-        # Duplicate Links_ID Handling 
-            #Duplicate Link IDS
+
         "Adding UI Cols, First we will Created a SLA ID Col"
 
         #Extracting unique values from the date col and sort them
-        unique_dates = sorted(self.df['SLA_Date'].dt.strftime('%Y-%m-%d').unique())
+        unique_dates = sorted(self.df['SLA_Date'].unique())
 
         #creating a mapping of date to rank
         date_to_rank = {date: f'{i:02d}' for i,date in enumerate(unique_dates)}
 
         #add a new col called rank based on the mapping
-        self.df['rank'] =  self.df['SLA_Date'].dt.strftime('%Y-%m-%d').map(date_to_rank)
+        self.df['rank'] =  self.df['SLA_Date'].map(date_to_rank)
 
         #Adding the SLA ID Col
         self.df['SLA_ID'] = self.df.apply(lambda row: f"{row['SLA_Date'].year}-{row['SLA_Date'].month}-{self.sp}{row['rank']}", axis=1)
 
         #Unique_Link_ID a combination of SLA_ID And Link_ID
-        self.df['Unique_Link_ID'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'] 
+        self.df['Unique_Link_ID'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'].astype(str)
 
         return self.df
