@@ -1,5 +1,9 @@
 import pandas as pd
 import numpy as np
+import os
+from dotenv import load_dotenv
+
+load_dotenv("SLA DP envionment file.env")
 
 '''
 Cleaner Module. 
@@ -76,6 +80,21 @@ class InvoiceCleaner:
             self.df['Invoice_Date'] = pd.to_datetime(self.df['Invoice_Date'])
 
 
+        # Harmoninzing the Invoice Peiods
+        if 'Invoice_Period' in self.df.columns:
+            Invoice_period_replacer = {
+                '1st Oct to 31st Dec 2023' : '01-Oct-2023 to 31-Dec-2023',
+                '01-Oct-2023 to 31-Dec-2023' : '01-Oct-2023 to 31-Dec-2023'
+            }
+            self.df['Invoice_Period'] = self.df['Invoice_Period'].replace(Invoice_period_replacer)
+
+            return self.df
+
+
+    """
+    def new_col_creator(self):
+        self.transform_data()
+
     def invoice_duplicate_handler(self):
         self.transform_data()
         #Handling the Duplicates Link_IDs
@@ -99,15 +118,18 @@ class InvoiceCleaner:
                 self.df = self.df.drop(duplicates.index.difference([max_qrc_index]))
         return self.df
 
+    """
     def clean_data(self):
-        self.df = self.invoice_duplicate_handler()
+        self.df = self.transform_data()
         return self.df
 
 
 
 class SLACleaner:
-    def __init__(self, df):
+    def __init__(self, df,sp):
         self.df = df
+        self.sp = sp
+        
 
     def drop_null_rows(self):
         self.df.dropna(how='all', inplace=True)
@@ -180,8 +202,8 @@ class SLACleaner:
 
         # Calculating the Quarterly Recurring Charges
         if self.MRC_picker() in self.df.columns:
-            self.excise_duty = 0.15
-            self.VAT = 0.16
+            self.excise_duty = float(os.getenv('excise_duty'))
+            self.VAT = float(os.getenv('VAT'))
             self.df['QRC'] = np.round(np.where(
                 self.df['Last Mile'].str.lower() == 'internet', # Internet taxation which includes both excise and VAT
                 ((self.df[self.MRC_picker()] * (1+self.excise_duty)) * (1+self.VAT)*3),                
@@ -211,17 +233,21 @@ class SLACleaner:
 
         # Duplicate Links_ID Handling 
             #Duplicate Link IDS
-        if 'Link_ID' in self.df.columns and len(self.df['Link_ID'].unique()) < len(self.df):
-            duplicate_link_ids = self.df['Link_ID'].value_counts()[lambda x:x>1].index
+        "Adding UI Cols, First we will Created a SLA ID Col"
 
-            for id in duplicate_link_ids:
-                #Subsetting the duplicate Data set
-                duplicates_df = self.df[self.df['Link_ID'] == id]
+        #Extracting unique values from the date col and sort them
+        unique_dates = sorted(self.df['SLA_Date'].dt.strftime('%Y-%m-%d').unique())
 
-                #Finding Index of row with theh highest capacity..We want to maintain the upgraded Link
-                max_cap_index = duplicates_df['Capacity_in_Mbps'].idxmax()
+        #creating a mapping of date to rank
+        date_to_rank = {date: f'{i:02d}' for i,date in enumerate(unique_dates)}
 
-                #Droppping all otherduplicates exce[t the one with upgraded capacity
-                self.df = self.df.drop(duplicates_df.index.difference([max_cap_index]))  
+        #add a new col called rank based on the mapping
+        self.df['rank'] =  self.df['SLA_Date'].dt.strftime('%Y-%m-%d').map(date_to_rank)
+
+        #Adding the SLA ID Col
+        self.df['SLA_ID'] = self.df.apply(lambda row: f"{row['SLA_Date'].year}-{row['SLA_Date'].month}-{self.sp}{row['rank']}", axis=1)
+
+        #Unique_Link_ID a combination of SLA_ID And Link_ID
+        self.df['Unique_Link_ID'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'] 
 
         return self.df
