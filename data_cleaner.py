@@ -88,7 +88,10 @@ class InvoiceCleaner:
             }
             self.df['Invoice_Period'] = self.df['Invoice_Period'].replace(Invoice_period_replacer)
 
-            return self.df
+        #Adding the Unique_Identifier Link_ID and Invoice_ref
+        self.df['Unique_Link_ID'] = self.df['Invoice_Reference'].astype(str) + '_' + self.df['Link_ID'].astype(str)
+
+        return self.df
 
 
     """
