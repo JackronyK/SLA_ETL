@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 from dotenv import load_dotenv
+import xlsxwriter
 
 load_dotenv("SLA DP envionment file.env")
 
@@ -11,9 +12,36 @@ It has 2 class
 1. Invoice Cleaner used to Process the Invoice data frames 
 2. SLA Cleaner used to process the SLA data Frames
 '''
+
+class pre_processor:
+    def __init__(self, files):
+        self.files = files
+    def modified_dfs(self):
+        files_holder = []
+        for file in self.files:    
+            xls = pd.ExcelFile(file)
+            for sheet in xls.sheet_names:
+                if 'sla' in sheet.lower():
+                    df_sla = pd.read_excel(file, sheet_name= sheet)
+                elif 'invoice' in sheet.lower():
+                    df_invoice = pd.read_excel(file, sheet_name= sheet)
+            df_invoice = pd.merge(df_invoice, df_sla[['Link ID', 'SLA Date']], on='Link ID', how = 'left')
+
+            """
+            
+            Merging the sheet into an excel workbook
+            """
+
+            with pd.ExcelWriter(file, engine='xlsxwriter', mode='w') as writer:
+                df_sla.to_excel(writer, sheet_name='SLA', index=False)
+                df_invoice.to_excel(writer,sheet_name='invoice', index=False)
+            files_holder.append(file)
+        return files_holder
+
 class InvoiceCleaner:
-    def __init__(self, df):
+    def __init__(self, df,sp):
         self.df = df
+        self.sp = sp
 
     def drop_null_rows(self):
         self.df.dropna(how='all', inplace=True)
@@ -50,6 +78,7 @@ class InvoiceCleaner:
         columns_wanted = {
             "Date": "Invoice Date",
             "ID": "Link ID",
+            "SLA Date": "SLA Date",
             "Period": "Invoice Period",
             "Description": "Invoice Description",
             "Reference/No": self.pick_invoice_column_name(),
@@ -62,6 +91,7 @@ class InvoiceCleaner:
             "Link ID": "Link_ID",
             self.pick_invoice_column_name(): "Invoice_Reference",
             "Invoice Date": "Invoice_Date",
+            "SLA Date": "SLA_Date",
             "Invoice Period": "Invoice_Period",
             "Invoice Description": "Invoice_Description",            
             self.QRC_Finder(): "Total_QRC"
@@ -88,8 +118,22 @@ class InvoiceCleaner:
             }
             self.df['Invoice_Period'] = self.df['Invoice_Period'].replace(Invoice_period_replacer)
 
-        #Adding the Unique_Identifier Link_ID and Invoice_ref
-        self.df['Unique_Link_ID'] = self.df['Invoice_Reference'].astype(str) + '_' + self.df['Link_ID'].astype(str)
+        "Adding UI Cols, First we will Created a SLA ID Col"
+
+        #Extracting unique values from the date col and sort them
+        unique_dates = sorted(self.df['SLA_Date'].unique())
+
+        #creating a mapping of date to rank
+        date_to_rank = {date: f'{i:02d}' for i,date in enumerate(unique_dates)}
+
+        #add a new col called rank based on the mapping
+        self.df['rank'] =  self.df['SLA_Date'].map(date_to_rank)
+
+        #Adding the SLA ID Col
+        self.df['SLA_ID'] = self.df.apply(lambda row: f"{row['SLA_Date'].year}-{row['SLA_Date'].month}-{self.sp}{row['rank']}", axis=1)
+
+        #Unique_Link_ID a combination of SLA_ID And Link_ID
+        self.df['Unique_Link_ID'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'].astype(str)
 
         return self.df
 
