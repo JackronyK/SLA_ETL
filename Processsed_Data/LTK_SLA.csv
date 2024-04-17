@@ -1,4 +1,4 @@
-Link_ID,SLA_Date,Last_Mile,Capacity_in_Mbps,Location,MRC_Excl,SLM_Comments,QRC_Incl,rank,SLA_ID,Unique_Link_ID,Service_Provider
+Link_ID,SLA_Date,Last_Mile,Capacity_in_Mbps,Location,MRC_Excl,SLM_Comments,QRC_Incl,rank,SLA_ID,Unique_Link_Identifier_SLA,Service_Provider
 1750,2020-10-01,Fibre,90,KRA - TIMES TOWERS TO KRA - KIXP (EADC),270000.0,"16/04/2022: Upgraded 90 Mbps @ KES 649,050  -> 150 Mbps @ KES 810,000 ex vat",939600.0,00,2020-10-LTK00,2020-10-LTK00_1750,LTK
 5277,2020-10-01,Fibre,75,KRA CUSTOMS HSE TO KRA TIMES TOWER,179718.0,Not in Invoice/Renamed/Relocated,625418.64,00,2020-10-LTK00,2020-10-LTK00_5277,LTK
 5611,2020-10-01,Fibre,8,KRA AIRPORT CONTAINER DEPOT TO CUSTOMS HSE MSA,20642.5,Okay. No change,71835.9,00,2020-10-LTK00,2020-10-LTK00_5611,LTK

@@ -8,7 +8,7 @@ load_dotenv("SLA DP envionment file.env")
 
 '''
 Cleaner Module. 
-It has 2 class
+It has 3 class
 1. Invoice Cleaner used to Process the Invoice data frames 
 2. SLA Cleaner used to process the SLA data Frames
 '''
@@ -17,26 +17,29 @@ class pre_processor:
     def __init__(self, files):
         self.files = files
     def modified_dfs(self):
-        files_holder = []
-        for file in self.files:    
+        
+        for file in self.files:               
             xls = pd.ExcelFile(file)
+            df_invoice = pd.DataFrame() 
+            df_sla = pd.DataFrame()
             for sheet in xls.sheet_names:
                 if 'sla' in sheet.lower():
                     df_sla = pd.read_excel(file, sheet_name= sheet)
                 elif 'invoice' in sheet.lower():
                     df_invoice = pd.read_excel(file, sheet_name= sheet)
+            #Modifyinh the invoice df by adding SLA Date
             df_invoice = pd.merge(df_invoice, df_sla[['Link ID', 'SLA Date']], on='Link ID', how = 'left')
 
             """
             
             Merging the sheet into an excel workbook
             """
+            file_path = os.path.splitext(file)[0]
+            new_file_path = f'{file_path}pre_processed.xlsx'
 
-            with pd.ExcelWriter(file, engine='xlsxwriter', mode='w') as writer:
+            with pd.ExcelWriter(new_file_path, engine= 'xlsxwriter', mode='w') as writer:
                 df_sla.to_excel(writer, sheet_name='SLA', index=False)
                 df_invoice.to_excel(writer,sheet_name='invoice', index=False)
-            files_holder.append(file)
-        return files_holder
 
 class InvoiceCleaner:
     def __init__(self, df,sp):
@@ -132,8 +135,16 @@ class InvoiceCleaner:
         #Adding the SLA ID Col
         self.df['SLA_ID'] = self.df.apply(lambda row: f"{row['SLA_Date'].year}-{row['SLA_Date'].month}-{self.sp}{row['rank']}", axis=1)
 
-        #Unique_Link_ID a combination of SLA_ID And Link_ID
-        self.df['Unique_Link_ID'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'].astype(str)
+        #mdified_Link_ID a combination of SLA_ID And Link_ID
+        self.df['modified_Link_ID'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'].astype(str)
+
+        #Adding a UI to be used as pk         
+        self.df['Unique_Link_Identifier_Invoice'] = self.df['Invoice_Reference'].astype(str) + '_' + self.df['Link_ID'].astype(str) + '_' + pd.to_datetime(self.df['SLA_Date']).dt.year.fillna('0000').astype(int).astype(str)
+
+
+        #Dropping redundant cols
+        redundant_cols = ['SLA_ID', 'rank']
+        self.df.drop(columns = redundant_cols, inplace = True)
 
         return self.df
 
@@ -296,6 +307,6 @@ class SLACleaner:
         self.df['SLA_ID'] = self.df.apply(lambda row: f"{row['SLA_Date'].year}-{row['SLA_Date'].month}-{self.sp}{row['rank']}", axis=1)
 
         #Unique_Link_ID a combination of SLA_ID And Link_ID
-        self.df['Unique_Link_ID'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'].astype(str)
+        self.df['Unique_Link_Identifier_SLA'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'].astype(str)
 
         return self.df

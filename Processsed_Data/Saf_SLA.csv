@@ -1,4 +1,4 @@
-Link_ID,SLA_Date,Last_Mile,Capacity_in_Mbps,Location,MRC_Excl,SLM_Comments,QRC_Incl,rank,SLA_ID,Unique_Link_ID,Service_Provider
+Link_ID,SLA_Date,Last_Mile,Capacity_in_Mbps,Location,MRC_Excl,SLM_Comments,QRC_Incl,rank,SLA_ID,Unique_Link_Identifier_SLA,Service_Provider
 95054463,2020-12-16,MPLS,25,BUNGOMA MICROWAVE,20352.8,Upgrade 5>25 Mbps. Check Upgrade Docs. KES 44997.2,70827.74,00,2020-12-Saf00,2020-12-Saf00_95054463,Saf
 95096538,2020-12-16,MPLS,12,BUSIA-WIMAX,70008.3,,243628.88,00,2020-12-Saf00,2020-12-Saf00_95096538,Saf
 95038953,2020-12-16,MPLS,80,DR BACKHAUL FIBRE,93504.6,,325396.01,00,2020-12-Saf00,2020-12-Saf00_95038953,Saf
