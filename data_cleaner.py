@@ -148,35 +148,6 @@ class InvoiceCleaner:
 
         return self.df
 
-
-    """
-    def new_col_creator(self):
-        self.transform_data()
-
-    def invoice_duplicate_handler(self):
-        self.transform_data()
-        #Handling the Duplicates Link_IDs
-            
-        # Identify duplicate Link_IDs
-        duplicate_link_ids = self.df['Link_ID'].value_counts()[lambda x:x >1].index
-
-        #Checking if there are duplicate Link IDS
-        if len(duplicate_link_ids) > 0:        
-        
-            # Iterate over each duplicate Link ID
-            for link_id in duplicate_link_ids:
-
-             # Filter the dataframe for all occurrences of the current Link ID
-                duplicates = self.df[self.df['Link_ID'] == link_id]
-            
-                # Find the index of the row with the highest Total_QRC
-                max_qrc_index = duplicates['Total_QRC'].idxmax()
-            
-                # Drop all other duplicates except for the one with the highest Total_QRC
-                self.df = self.df.drop(duplicates.index.difference([max_qrc_index]))
-        return self.df
-
-    """
     def clean_data(self):
         self.df = self.transform_data()
         return self.df
@@ -308,5 +279,10 @@ class SLACleaner:
 
         #Unique_Link_ID a combination of SLA_ID And Link_ID
         self.df['Unique_Link_Identifier_SLA'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'].astype(str)
+
+
+        # dropping redundant cols
+        red_cols = ['rank']
+        self.df.drop(columns = red_cols, inplace = True)
 
         return self.df
