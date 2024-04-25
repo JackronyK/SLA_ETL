@@ -222,9 +222,9 @@ class SLACleaner:
             self.df['SLA Date'] = pd.to_datetime(self.df['SLA Date'])           
             
 
-        # Removing any trailling or leading spcae in Lastmile Col
+        # Removing any trailling or leading space and imputing nulls with 'Unknown' in Lastmile Col
         if 'Last Mile' in self.df.columns:
-            self.df['Last Mile'] = self.df['Last Mile'].str.strip()
+            self.df['Last Mile'] = self.df['Last Mile'].str.strip().fillna('Unknown')
 
         # Capacity
         if self.capacity_picker() in self.df.columns and self.df[self.capacity_picker()].dtype == 'object':
