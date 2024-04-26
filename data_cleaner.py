@@ -121,6 +121,35 @@ class InvoiceCleaner:
             }
             self.df['Invoice_Period'] = self.df['Invoice_Period'].replace(Invoice_period_replacer)
 
+        ## Classifying the Invoice Period
+        def Invoice_p_pro(prd):
+            prd_col = pd.to_datetime(prd.split(' ')[0])
+            year = prd_col.year
+            month = prd_col.month
+
+            if month >= 1 and month <= 3:
+                quarter = 'Q3'
+            elif month >= 4 and month <= 6:
+                quarter = 'Q4'
+            elif month >= 7 and month <= 9:
+                quarter = 'Q1'
+            elif month >= 10 and month <= 12:
+                quarter = 'Q2'
+            else:
+                quarter = 'Unknown'
+            
+            # Financial Year
+            if month >= 1 and month <= 6:
+                fyr = f'Fyr {year-1}/{str(year)[-2:]}'
+            elif month >= 7 and month <= 12:
+                fyr = f'Fyr {year}/{str(year+1)[-2:]}'
+            else:
+                fyr = 'Unknown'
+
+            return quarter, fyr
+        
+        self.df[['Invoice_Quarter', 'Invoice_Fyr']] = self.df['Invoice_Period'].apply(Invoice_p_pro).apply(pd.Series)
+            
         "Adding UI Cols, First we will Created a SLA ID Col"
 
         #Extracting unique values from the date col and sort them
@@ -133,13 +162,13 @@ class InvoiceCleaner:
         self.df['rank'] =  self.df['SLA_Date'].map(date_to_rank)
 
         #Adding the SLA ID Col
-        self.df['SLA_ID'] = self.df.apply(lambda row: f"{row['SLA_Date'].year}-{row['SLA_Date'].month}-{self.sp}{row['rank']}", axis=1)
+        self.df['SLA_ID'] = self.df.apply(lambda row: f"{row['SLA_Date'].year if pd.notnull(row['SLA_Date']) else '0000'}-{row['SLA_Date'].month if pd.notnull(row['SLA_Date']) else '00'}-{self.sp}{row['rank']}", axis=1)
 
         #mdified_Link_ID a combination of SLA_ID And Link_ID
         self.df['modified_Link_ID'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'].astype(str)
 
         #Adding a UI to be used as pk         
-        self.df['Unique_Link_Identifier_Invoice'] = self.df['Invoice_Reference'].astype(str) + '_' + self.df['Link_ID'].astype(str) + '_' + pd.to_datetime(self.df['SLA_Date']).dt.year.fillna('0000').astype(int).astype(str)
+        self.df['Unique_Link_Identifier_Invoice'] = self.df['Invoice_Reference'].astype(str) + '_' + self.df['Link_ID'].astype(str) + '_' + pd.to_datetime(self.df['SLA_Date']).dt.year.fillna(0).astype(int).astype(str).replace('0','0000')
 
 
         #Dropping redundant cols
@@ -275,8 +304,8 @@ class SLACleaner:
         self.df['rank'] =  self.df['SLA_Date'].map(date_to_rank)
 
         #Adding the SLA ID Col
-        self.df['SLA_ID'] = self.df.apply(lambda row: f"{row['SLA_Date'].year}-{row['SLA_Date'].month}-{self.sp}{row['rank']}", axis=1)
-
+        #self.df['SLA_ID'] = self.df.apply(lambda row: f"{row['SLA_Date'].year}-{row['SLA_Date'].month}-{self.sp}{row['rank']}", axis=1)
+        self.df['SLA_ID'] = self.df.apply(lambda row: f"{row['SLA_Date'].year if pd.notnull(row['SLA_Date']) else '0000'}-{row['SLA_Date'].month if pd.notnull(row['SLA_Date']) else '00'}-{self.sp}{row['rank']}", axis=1)
         #Unique_Link_ID a combination of SLA_ID And Link_ID
         self.df['Unique_Link_Identifier_SLA'] = self.df['SLA_ID'] + '_' + self.df['Link_ID'].astype(str)
 
