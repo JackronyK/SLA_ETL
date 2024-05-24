@@ -209,7 +209,7 @@ class SLACleaner:
                 return matching_cols[0]
 
     def site_desc_picker(self):
-        for pat in ['site', 'description']:
+        for pat in ['site', 'service']:
             matching_cols = [col for col in self.df.columns if pat.lower() in col.lower()]
             if matching_cols:
                 return matching_cols[0]
