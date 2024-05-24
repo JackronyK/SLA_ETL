@@ -315,3 +315,44 @@ class SLACleaner:
         self.df.drop(columns = red_cols, inplace = True)
 
         return self.df
+### Location_Cordinates
+class location_cor:
+    def __init__(self, df):
+        self.df = df
+
+    def location_cleaner(self):
+        # Defining the partial Replacement
+        partial_replacements = {
+        'kra': '',
+        '-': '',
+        'internet': '',
+        'ceragon': '',
+        'wimax': '',
+        'fiber': '',
+        'loop': '',
+        'microwave':'',
+        'ppo': '',
+        'pier': '',
+        'fibre': ''
+        }
+
+        #Defining replacements for entire cellls
+        full_replacement = {
+            'sameer': 'Nairobi-Sameer Park',
+            'hq' : 'Nairobi-Times Tower',
+            'fixed' : 'Nairobi-Times Tower',
+            'kixp' : 'Nairobi-Times Tower',
+            'backhaul': 'Nairobi-Times Tower',
+            'times tower' : 'Nairobi-Times Tower',
+            'msa': 'Mombasa - Customs House',
+            'city hall': 'Nairobi - City Hall',
+            'kenya school': 'KESRA Nairobi',
+            'kesra':'KESRA Nairobi',
+            'fortiswestlands': 'Fortis westlands',
+            'kopanga': 'kilindini'          
+
+        } 
+        
+
+
+
