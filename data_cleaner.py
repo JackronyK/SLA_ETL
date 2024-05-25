@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import os
+import requests
+from fuzzywuzzy import fuzz
 from dotenv import load_dotenv
 import xlsxwriter
 
@@ -316,43 +318,121 @@ class SLACleaner:
 
         return self.df
 ### Location_Cordinates
-class location_cor:
+class LocationCor:
     def __init__(self, df):
         self.df = df
 
-    def location_cleaner(self):
-        # Defining the partial Replacement
+    def location_cleaner(self, location):
+        # Defining the partial replacements
         partial_replacements = {
-        'kra': '',
-        '-': '',
-        'internet': '',
-        'ceragon': '',
-        'wimax': '',
-        'fiber': '',
-        'loop': '',
-        'microwave':'',
-        'ppo': '',
-        'pier': '',
-        'fibre': ''
+            'kra': '',
+            '-': '',
+            'internet': '',
+            'ceragon': '',
+            'wimax': '',
+            'fiber': '',
+            'loop': '',
+            'microwave': '',
+            'ppo': '',
+            'pier': '',
+            'fibre': ''
         }
 
-        #Defining replacements for entire cellls
+        # Defining replacements for entire cells
         full_replacement = {
             'sameer': 'Nairobi-Sameer Park',
-            'hq' : 'Nairobi-Times Tower',
-            'fixed' : 'Nairobi-Times Tower',
-            'kixp' : 'Nairobi-Times Tower',
+            'hq': 'Nairobi-Times Tower',
+            'fixed': 'Nairobi-Times Tower',
+            'kixp': 'Nairobi-Times Tower',
             'backhaul': 'Nairobi-Times Tower',
-            'times tower' : 'Nairobi-Times Tower',
+            'times tower': 'Nairobi-Times Tower',
             'msa': 'Mombasa - Customs House',
             'city hall': 'Nairobi - City Hall',
             'kenya school': 'KESRA Nairobi',
-            'kesra':'KESRA Nairobi',
+            'kesra': 'KESRA Nairobi',
             'fortiswestlands': 'Fortis westlands',
-            'kopanga': 'kilindini'          
+            'kopanga': 'kilindini',
+            'city square' : 'Nairobi-City Square',
+            
+        }
 
-        } 
-        
+        # Performing the partial replacements
+        for key, value in partial_replacements.items():
+            location = location.lower().replace(key, value)
 
+        # Perform full replacements
+        for key, value in full_replacement.items():
+            if key in location.lower():
+                return value
 
+        # Strip and title case the final string
+        location = location.strip().title()
+        return location
 
+    def get_coordinates(self, loc_name, depth=0):
+        base_url = 'https://nominatim.openstreetmap.org/search'
+        params = {'q': loc_name, 'format': 'json', 'limit': 5}
+        headers = {'User-Agent': 'Mozilla/5.0'}
+
+        try:
+            response = requests.get(base_url, params=params, headers=headers)
+            response.raise_for_status()  # Raises an HTTPError for bad responses
+            data = response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return None, None
+        except ValueError as e:
+            print(f"Failed to parse JSON response: {e}")
+            return None, None
+
+        if not isinstance(data, list):
+            print(f"Unexpected response format: {data}")
+            return None, None
+
+        best_match = None
+        max_ratio = 0
+
+        for result in data:
+            if isinstance(result, dict) and 'display_name' in result:
+                if any(country in result.get('display_name', '') for country in ['Kenya', 'Uganda', 'Tanzania', 'Rwanda', 'Burundi']):
+                    ratio = fuzz.partial_ratio(loc_name.lower(), result.get('display_name', '').lower())
+                    if ratio > max_ratio:
+                        max_ratio = ratio
+                        best_match = result
+
+        if best_match:
+            latitude = best_match.get('lat')
+            longitude = best_match.get('lon')
+            if latitude and longitude:
+                return float(latitude), float(longitude)
+
+        if depth == 0:
+            parts = loc_name.split()
+            if len(parts) > 1:
+                first_part = parts[0]
+                second_part = parts[1]
+
+                if first_part != loc_name:
+                    first_part_result = self.get_coordinates(first_part, depth + 1)
+                    if first_part_result != (None, None):
+                        return first_part_result
+
+                if second_part != loc_name:
+                    second_part_result = self.get_coordinates(second_part, depth + 1)
+                    if second_part_result != (None, None):
+                        return second_part_result
+
+        return None, None
+
+    def geo_cor(self):
+        self.df['Location'] = self.df['Location'].apply(self.location_cleaner)
+
+        def apply_get_coordinates(location):
+            lat, lon = self.get_coordinates(location)
+            if lat is None or lon is None:
+                print(f"Coordinates not found for location: {location}")
+                return pd.Series([None, None])
+            return pd.Series([lat, lon])
+
+        self.df[['lat', 'lon']] = self.df['Location'].apply(apply_get_coordinates)
+        return self.df
