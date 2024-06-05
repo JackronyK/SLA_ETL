@@ -353,6 +353,9 @@ class LocationCor:
             'fortiswestlands': 'Fortis westlands',
             'kopanga': 'kilindini',
             'city square' : 'Nairobi-City Square',
+            'malaba': 'Malaba Kenya',
+            'cbc': 'Upper Hill, Elgon Road - nairobi'
+
             
         }
 
@@ -394,7 +397,7 @@ class LocationCor:
 
         for result in data:
             if isinstance(result, dict) and 'display_name' in result:
-                if any(country in result.get('display_name', '') for country in ['Kenya', 'Uganda', 'Tanzania', 'Rwanda', 'Burundi']):
+                if any(country in result.get('display_name', '') for country in ['Kenya']):
                     ratio = fuzz.partial_ratio(loc_name.lower(), result.get('display_name', '').lower())
                     if ratio > max_ratio:
                         max_ratio = ratio
